@@ -1,0 +1,27 @@
+{
+	"name": "robertheim/videos",
+	"type": "phpbb-extension",
+	"description": "Adds a video-url field to topics and auto embeds the video before the first post",
+	"homepage": "https://github.com/RobertHeim/phpbb-ext-videos",
+	"version": "0.0.1-DEV",
+	"time": "2014-10-25",
+	"keywords": ["phpbb", "extension", "video", "videos", "youtube", "dailymotion", "vimeo"],
+	"license": "GPL-2.0",
+	"authors": [
+		{
+			"name": "Robert Heim",
+			"homepage": "http://blog.robert-heim.de",
+			"email": "robert@robert-heim.de",
+			"role": "Lead Developer"
+		}
+	],
+	"require": {
+		"php": ">=5.3.3"
+	},
+	"extra": {
+		"display-name": "RH Videos",
+		"soft-require": {
+			"phpbb/phpbb": "3.1.*"
+		}
+	}
+}
