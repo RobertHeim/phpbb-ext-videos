@@ -7,11 +7,10 @@ phpBB 3.1 extension, that adds a video-url field to topics and auto embeds the v
 
 * post a video-url when posting a topic
 * enabled/disable on a per forum basis
-* embed video of different providers, supported:
-  * youtube
-  * dailymotion
-  * vimeo
-  * others will follow
+* embed video of providers that support oEmbed, e.g.:
+  * Youtube
+  * Vimeo
+  * Daily Motion
 
 ## Installation
 
