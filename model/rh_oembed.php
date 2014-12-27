@@ -19,10 +19,7 @@ class rh_oembed
 
 	public function __construct($url)
 	{
-		$this->response = Simple::request($url, array(
-			'maxwidth' => 400,
-			'maxheight' => 300,
-		));
+		$this->response = Simple::request($url);
 	}
 
 	public function get_html()
@@ -48,5 +45,17 @@ class rh_oembed
 			return '';
 		}
 	}
-
+	
+	public function get_thumbnail_url()
+	{
+		if (isset($this->response))
+		{
+			return $this->response->getThumbnailUrl();
+		}
+		else
+		{
+			return '';
+		}
+	}
+	
 }

@@ -44,5 +44,6 @@ class videos_manager
 				WHERE topic_id='.$topic_id;
 		$this->db->sql_query($sql);		
 	}
+
 }
 

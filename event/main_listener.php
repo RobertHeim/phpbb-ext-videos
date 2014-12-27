@@ -101,7 +101,8 @@ class main_listener implements EventSubscriberInterface
 		{
 			$data = $event->get_data();
 			$video_url = $this->get_video_url_from_post_request();
-			// TODO this validation is expensive, because we discover the service, maybe we should
+			// TODO this validation is expensive, because we discover
+			// the service here and later on during emedding always again, maybe we should
 			// store more information to make embedding later more efficent
 			if (!empty($video_url)) {
 				$error = false;
@@ -122,7 +123,8 @@ class main_listener implements EventSubscriberInterface
 				if ($error)
 				{
 					$this->user->add_lang_ext('robertheim/videos', 'videos');
-					$data['error'][] = $this->user->lang('RH_VIDEO_URL_INVALID', $video_url);
+					$video_link = "<a href=\"$video_url\">$video_url</a>";
+					$data['error'][] = $this->user->lang('RH_VIDEO_URL_INVALID', $video_link);
 					$event->set_data($data);
 				}				
 			}
@@ -262,14 +264,42 @@ class main_listener implements EventSubscriberInterface
 			$video_url = $data['topic_data'][PREFIXES::CONFIG . '_url'];
 			if (! empty($video_url))
 			{
-				$video = new rh_oembed($video_url);
-				$this->template->assign_vars(
-					array(
-						'S_RH_VIDEOS_SHOW' => true,
-						'RH_VIDEOS_VIDEO_URL' => $video_url,
-						'RH_VIDEOS_VIDEO_TITLE' => $video->get_title(),
-						'RH_VIDEOS_VIDEO_HTML' => $video->get_html(),
-					));
+				$error = false;
+				try
+				{
+					$video = new rh_oembed($video_url);
+					if (empty($video->get_html()))
+					{
+						$error = true;
+					}
+				}
+				catch (\Exception $e)
+				{
+					// probably could not establish a http connection to the given url
+					$error = true;
+				}
+			
+				if ($error)
+				{
+					$video_link = "<a href=\"$video_url\">$video_url</a>";
+					$error_msg = $this->user->lang('RH_VIDEOS_VIDEO_COULD_NOT_BE_LOADED', $video_link);
+					$this->template->assign_vars(
+						array(
+							'S_RH_VIDEOS_INCLUDE_CSS' => true,
+							'S_RH_VIDEOS_SHOW' => true,
+							'S_RH_VIDEOS_ERROR' => true,
+							'RH_VIDEOS_ERROR_MSG' => $error_msg,
+						));
+				} else {
+					$this->template->assign_vars(
+						array(
+							'S_RH_VIDEOS_INCLUDE_CSS' => true,
+							'S_RH_VIDEOS_SHOW' => true,
+							'RH_VIDEOS_VIDEO_URL' => $video_url,
+							'RH_VIDEOS_VIDEO_TITLE' => $video->get_title(),
+							'RH_VIDEOS_VIDEO_HTML' => $video->get_html(),
+						));
+				}
 			}
 		}
 	}
