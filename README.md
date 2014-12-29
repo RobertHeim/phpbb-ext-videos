@@ -1,7 +1,7 @@
 phpbb-ext-videos
 ================
 
-phpBB 3.1 extension, that adds a video-url field to topics and auto embeds the video before the first post.
+phpBB 3.1 extension, that adds a video-url field when posting a new topic and auto embeds the video before the first post.
 
 ## Features
 
@@ -11,6 +11,7 @@ phpBB 3.1 extension, that adds a video-url field to topics and auto embeds the v
   * Youtube
   * Vimeo
   * Daily Motion
+* caches oEmebed API results (TODO ACP module allows pruning the cache)
 
 ## Installation
 
