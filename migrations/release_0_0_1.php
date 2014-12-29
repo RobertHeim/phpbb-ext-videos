@@ -38,7 +38,7 @@ class release_0_0_1 extends \phpbb\db\migration\migration
 						'topic_id'		=> array('UINT', 0),
 						'title'			=> array('VCHAR:255', ''),
 						'html'			=> array('TEXT', ''),
-						'url'			=> array('VCHAR:255', ''),
+						'url'			=> array('VCHAR:511', ''),
 						'last_update'	=> array('TIMESTAMP', 0),
 						'error'			=> array('BOOL', 0),
 					),
