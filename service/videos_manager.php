@@ -133,23 +133,24 @@ class videos_manager
 			{
 				$last_update = time();
 				$video = rh_video::fromUrl($row['url']);
-				$new_title = $new_html = $error = false;
+				$new_title = $new_html = $new_thumbnail_url = $error = false;
 				if (false === $video)
 				{
 					$error = true;
-					$video = new rh_video($row['title'], $row['url'], $row['html'], $last_update, $error);
+					$video = new rh_video($row['title'], $row['url'], $row['html'], $row['thumbnail_url'], $last_update, $error);
 				}
 				else
 				{
-					$new_html = $video->get_html();
 					$new_title = $video->get_title();
+					$new_html = $video->get_html();
+					$new_thumbnail_url = $video->get_thumbnail_url();
 					$last_update = $video->get_last_update();
 				}
-				$this->update_video($row['id'], $new_title, $new_html, $last_update, $error);
+				$this->update_video($row['id'], $new_title, $new_html, $new_thumbnail_url, $last_update, $error);
 			}
 			else
 			{
-				$video = new rh_video($row['title'], $row['url'], $row['html'], $row['last_update'], $row['error']);
+				$video = new rh_video($row['title'], $row['url'], $row['html'], $row['last_update'], $row['thumbnail_url'], $row['error']);
 			}
 			$topic_to_video_map[] = array(
 				'topic_id' => $row['topic_id'],
@@ -166,10 +167,11 @@ class videos_manager
 	 * @param int $video_id
 	 * @param string $new_title
 	 * @param string $new_html
+	 * @param string $new_thumbnail_url
 	 * @param int $last_update
 	 * @param boolean $error
 	 */
-	private function update_video($video_id, $new_title, $new_html, $last_update, $error)
+	private function update_video($video_id, $new_title, $new_html, $new_thumbnail_url, $last_update, $error)
 	{
 		$video_id = (int) $video_id;
 		$sql_ary = array(
@@ -179,8 +181,9 @@ class videos_manager
 		if (!$error)
 		{
 			$sql_ary = array_merge($sql_ary, array(
-				'title'	=> $new_title,
-				'html'	=> $new_html,
+				'title'			=> $new_title,
+				'html'			=> $new_html,
+				'thumbnail_url'	=> $new_thumbnail_url,
 			));
 		}
 		$sql = 'UPDATE ' . $this->table_prefix . TABLES::VIDEOS . '

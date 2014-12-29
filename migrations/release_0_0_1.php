@@ -39,6 +39,7 @@ class release_0_0_1 extends \phpbb\db\migration\migration
 						'title'			=> array('VCHAR:255', ''),
 						'html'			=> array('TEXT', ''),
 						'url'			=> array('VCHAR:511', ''),
+						'thumbnail_url'	=> array('VCHAR:511', ''),
 						'last_update'	=> array('TIMESTAMP', 0),
 						'error'			=> array('BOOL', 0),
 					),

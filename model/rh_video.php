@@ -30,6 +30,11 @@ class rh_video
 	 * @var string
 	 */
 	private $html;
+	
+	/**
+	 * @var string
+	 */
+	private $thumbnail_url;
 
 	/**
 	 * indicates when the html was updated the last time.
@@ -74,7 +79,7 @@ class rh_video
 			{
 				return false;
 			}
-			return new rh_video($response->getTitle(), $url, $response->getHtml(), time(), false);
+			return new rh_video($response->getTitle(), $url, $response->getHtml(), $response->getThumbnailUrl(), time(), false);
 		}
 		catch (\Exception $e)
 		{
@@ -89,14 +94,16 @@ class rh_video
 	 * @param string $title        	
 	 * @param string $url        	
 	 * @param string $html
+	 * @param string $thumbnail_url
 	 * @param int $last_update        	
 	 * @param string $has_error        	
 	 */
-	public function __construct($title, $url, $html, $last_update, $has_error)
+	public function __construct($title, $url, $html, $thumbnail_url, $last_update, $has_error)
 	{
 		$this->title = $title;
 		$this->url = $url;
 		$this->html = $html;
+		$this->thumbnail_url = $thumbnail_url;
 		$this->last_update = $last_update;
 		$this->error = $has_error;
 	}
@@ -114,6 +121,11 @@ class rh_video
 	public function get_html()
 	{
 		return $this->html;
+	}
+	
+	public function get_thumbnail_url()
+	{
+		return $this->thumbnail_url;
 	}
 
 	public function get_last_update()
