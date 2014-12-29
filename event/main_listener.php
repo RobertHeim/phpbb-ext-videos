@@ -15,14 +15,13 @@ namespace robertheim\videos\event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use robertheim\videos\PREFIXES;
 use robertheim\videos\PERMISSIONS;
-use robertheim\videos\model\rh_oembed;
+use robertheim\videos\model\rh_video;
 
 /**
  * Event listener
  */
 class main_listener implements EventSubscriberInterface
 {
-
 	static public function getSubscribedEvents()
 	{
 		return array(
@@ -30,10 +29,16 @@ class main_listener implements EventSubscriberInterface
 			'core.modify_posting_parameters' => 'modify_posting_parameters',
 			'core.posting_modify_template_vars' => 'posting_modify_template_vars',
 			'core.viewtopic_assign_template_vars_before' => 'viewtopic_assign_template_vars_before',
-			'core.modify_submit_post_data' => 'modify_submit_post_data',
 			'core.submit_post_end'							=> 'submit_post_end',
 		);
 	}
+	
+	/**
+	 * Used during a new video post to store video data, so we do not need to call oEmbed API twice.
+	 *
+	 * @var rh_video
+	 */
+	private $video = false;
 
 	protected $config;
 
@@ -101,70 +106,39 @@ class main_listener implements EventSubscriberInterface
 		{
 			$data = $event->get_data();
 			$video_url = $this->get_video_url_from_post_request();
-			// TODO this validation is expensive, because we discover
-			// the service here and later on during emedding always again, maybe we should
-			// store more information to make embedding later more efficent
-			if (!empty($video_url)) {
-				$error = false;
-				try
-				{
-					$video = new rh_oembed($video_url);
-					if (empty($video->get_html()))
-					{
-						$error = true;
-					}
-				} 
-				catch (\Exception $e)
-				{
-					// probably could not establish a http connection to the given url
-					$error = true;
-				}
-				
-				if ($error)
+			// we do not enforce a video url to be present.
+			if (!empty($video_url))
+			{
+				$video = rh_video::fromUrl($video_url);
+				if (false === $video)
 				{
 					$this->user->add_lang_ext('robertheim/videos', 'videos');
 					$video_link = "<a href=\"$video_url\">$video_url</a>";
 					$data['error'][] = $this->user->lang('RH_VIDEO_URL_INVALID', $video_link);
 					$event->set_data($data);
-				}				
+				}
+				else
+				{
+					$this->video = $video;
+				}
 			}
 		}
 	}
 
 	/**
-	 * Event: core.modify_submit_post_data
-	 * Assign the video to the topic
-	 */
-	public function modify_submit_post_data($event)
-	{
-		if ($this->auth->acl_get(PERMISSIONS::POST_VIDEO))
-		{
-			
-			$video_url = $this->get_video_url_from_post_request();
-			
-			$data = $event->get_data();
-			$data['data'][PREFIXES::CONFIG . '_url'] = $video_url;
-			$event->set_data($data);
-		}
-	}
-	
-
-	/**
 	 * Event: core.postingsubmit_post_end
 	 *
-	 * After a posting we set the video url of the topic
+	 * After a posting we store the video and assign it to the topic
 	 */
 	public function submit_post_end($event)
 	{
 		if ($this->auth->acl_get(PERMISSIONS::POST_VIDEO))
 		{
 			$event_data = $event->get_data();
-			$data = $event_data['data'];
-			$topic_id = (int) $data['topic_id'];
-			$video_url = $data[PREFIXES::CONFIG . '_url'];
-			if(!empty($video_url))
+			$topic_id = (int) $event_data['data']['topic_id'];
+			if(false !== $this->video)
 			{
-				$this->videos_manager->set_video_url_of_topic($topic_id, $video_url);
+				$this->videos_manager->store_video($this->video, $topic_id);
 			}
 		}
 	}
@@ -176,6 +150,51 @@ class main_listener implements EventSubscriberInterface
 	}
 	
 	/**
+	 * helper
+	 * @return boolean
+	 */
+	private function is_new_topic_or_edit_first_post($data) {
+
+		$mode = false;
+			
+		if (empty($data['mode']))
+		{
+			return false;
+		}
+		
+		$mode = $data['mode'];
+		$is_new_topic = $mode == 'post';
+		if ($is_new_topic)
+		{
+			return true;
+		}
+		if ($mode == 'edit')
+		{
+			$topic_id = $post_id = $topic_first_post_id = false;
+			if (! empty($data['post_data']['topic_id']))
+			{
+				$topic_id = $data['post_data']['topic_id'];
+			}
+				
+			if (! empty($data['post_data']['post_id']))
+			{
+				$post_id = $data['post_data']['post_id'];
+			}
+				
+			if (! empty($data['post_data']['topic_first_post_id']))
+			{
+				$topic_first_post_id = $data['post_data']['topic_first_post_id'];
+			}
+			$is_edit_first_post = $topic_id && $post_id && $post_id == $topic_first_post_id;
+			if ($is_edit_first_post)
+			{
+				return true;
+			}				
+		}
+		return false;
+	}
+	
+	/**
 	 * Event: core.posting_modify_template_vars
 	 * Send the video_url on edits or preview to the template
 	 * 
@@ -184,68 +203,39 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function posting_modify_template_vars($event)
 	{
-		if ($this->auth->acl_get(PERMISSIONS::POST_VIDEO))
+		$data = $event->get_data();
+		
+		if (!$this->is_new_topic_or_edit_first_post($data))
 		{
-			$data = $event->get_data();
-			$forum_id = $data['forum_id'];
-			
-			if (! $this->is_videos_enabled_in_forum($forum_id))
-			{
-				return;
-			}
-			
-			$mode = $enable_trader = $topic_id = $post_id = $topic_first_post_id = false;
-			
-			if (! empty($data['mode']))
-			{
-				$mode = $data['mode'];
-			}
-			
-			if ($mode == 'reply')
-			{
-				return;
-			}
-			
-			if (! empty($data['post_data']['topic_id']))
-			{
-				$topic_id = $data['post_data']['topic_id'];
-			}
-			
-			if (! empty($data['post_data']['post_id']))
-			{
-				$post_id = $data['post_data']['post_id'];
-			}
-			
-			if (! empty($data['post_data']['topic_first_post_id']))
-			{
-				$topic_first_post_id = $data['post_data']['topic_first_post_id'];
-			}
-			
-			$is_new_topic = $mode == 'post';
-			$is_edit_first_post = $mode == 'edit' && $topic_id && $post_id &&
-				 $post_id == $topic_first_post_id;
-			if ($is_new_topic || $is_edit_first_post)
-			{
-				
-				$data['page_data']['RH_VIDEOS_SHOW_FIELD'] = true;
-				
-				$video_url = '';
-				//die("aa");
-				// do we got some preview-data?
-				if ($this->request->is_set_post('rh_video_url'))
-				{
-					// use data from post-request
-					$video_url = $this->get_video_url_from_post_request();
-				}
-				else if ($is_edit_first_post)
-				{
-					// use data from db
-					$video_url = $data['post_data'][PREFIXES::CONFIG . '_url'];
-				}
-				$data['page_data']['RH_VIDEO_URL'] = $video_url;
-				$event->set_data($data);
-			}
+			return;
 		}
+		if (!$this->auth->acl_get(PERMISSIONS::POST_VIDEO))
+		{
+			return;
+		}
+		$forum_id = $data['forum_id'];		
+		if (! $this->is_videos_enabled_in_forum($forum_id))
+		{
+			return;
+		}
+		
+		$video_url = '';
+		// do we got some preview-data?
+		if ($this->request->is_set_post('rh_video_url'))
+		{
+			// use data from post-request
+			$video_url = $this->get_video_url_from_post_request();
+		}
+		else if ($is_edit_first_post)
+		{
+			// use data from db
+			$topic_id = (int) $data['topic_id'];
+			$video = $this->videos_manager->get_video_for_topic_id($topic_id);
+			$video_url = $video->get_url();
+		}
+		$data['page_data']['RH_VIDEOS_SHOW_FIELD'] = true;
+		$data['page_data']['RH_VIDEO_URL'] = $video_url;
+		$event->set_data($data);
 	}
 
 	/**
@@ -259,49 +249,38 @@ class main_listener implements EventSubscriberInterface
 	{
 		$data = $event->get_data();
 		$forum_id = (int) $data['forum_id'];
-		if ($this->is_videos_enabled_in_forum($forum_id))
+		if (!$this->is_videos_enabled_in_forum($forum_id))
 		{
-			$video_url = $data['topic_data'][PREFIXES::CONFIG . '_url'];
-			if (! empty($video_url))
-			{
-				$error = false;
-				try
-				{
-					$video = new rh_oembed($video_url);
-					if (empty($video->get_html()))
-					{
-						$error = true;
-					}
-				}
-				catch (\Exception $e)
-				{
-					// probably could not establish a http connection to the given url
-					$error = true;
-				}
-			
-				if ($error)
-				{
-					$video_link = "<a href=\"$video_url\">$video_url</a>";
-					$error_msg = $this->user->lang('RH_VIDEOS_VIDEO_COULD_NOT_BE_LOADED', $video_link);
-					$this->template->assign_vars(
-						array(
-							'S_RH_VIDEOS_INCLUDE_CSS' => true,
-							'S_RH_VIDEOS_SHOW' => true,
-							'S_RH_VIDEOS_ERROR' => true,
-							'RH_VIDEOS_ERROR_MSG' => $error_msg,
-						));
-				} else {
-					$this->template->assign_vars(
-						array(
-							'S_RH_VIDEOS_INCLUDE_CSS' => true,
-							'S_RH_VIDEOS_SHOW' => true,
-							'RH_VIDEOS_VIDEO_URL' => $video_url,
-							'RH_VIDEOS_VIDEO_TITLE' => $video->get_title(),
-							'RH_VIDEOS_VIDEO_HTML' => $video->get_html(),
-						));
-				}
-			}
+			return;
 		}
+		$topic_id = (int) $data['topic_data']['topic_id'];
+		$video = $this->videos_manager->get_video_for_topic_id($topic_id);
+		if (false === $video)
+		{
+			return;
+		}
+		// TODO update html when chachetime is out of date @see videos_manager
+		// if ($video->is_error()) {
+		// $video_url = $video->get_url();
+		// $video_link = "<a href=\"$video_url\">$video_url</a>";
+		// $error_msg = $this->user->lang('RH_VIDEOS_VIDEO_COULD_NOT_BE_LOADED', $video_link);
+		
+		// $this->template->assign_vars(
+		// 	array(
+		// 		'S_RH_VIDEOS_INCLUDE_CSS' => true,
+		// 		'S_RH_VIDEOS_SHOW' => true,
+		//		'RH_VIDEOS_ERROR' => true,
+		// 		'RH_VIDEOS_VIDEO_URL' => $video->get_url(),
+		// 		'RH_VIDEOS_ERROR_MSG' => $error_msg,
+		// 	));		
+				// }
+		$this->template->assign_vars(
+			array(
+				'S_RH_VIDEOS_INCLUDE_CSS' => true,
+				'S_RH_VIDEOS_SHOW' => true,
+				'RH_VIDEOS_VIDEO_URL' => $video->get_url(),
+				'RH_VIDEOS_VIDEO_TITLE' => $video->get_title(),
+				'RH_VIDEOS_VIDEO_HTML' => $video->get_html(),
+			));		
 	}
-
 }

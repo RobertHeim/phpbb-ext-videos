@@ -8,8 +8,10 @@
 */
 
 namespace robertheim\videos\migrations;
-use robertheim\videos\PREFIXES;
+
 use robertheim\videos\PERMISSIONS;
+use robertheim\videos\PREFIXES;
+use robertheim\videos\TABLES;
 
 class release_0_0_1 extends \phpbb\db\migration\migration
 {
@@ -29,27 +31,33 @@ class release_0_0_1 extends \phpbb\db\migration\migration
 
 	public function update_schema() {
 		return array(
-			'add_columns'	=> array(
-				TOPICS_TABLE => array(
-					$this->config_prefix . '_url'	=> array('VCHAR:255', ''),
-					//$this->config_prefix . 'data'	=> array('TEXT', ''),
+			'add_tables' => array(
+				$this->table_prefix . TABLES::VIDEOS	=> array(
+					'COLUMNS'		=> array(
+						'id'			=> array('UINT', NULL, 'auto_increment'),
+						'topic_id'		=> array('UINT', 0),
+						'title'			=> array('VCHAR:255', ''),
+						'html'			=> array('TEXT', ''),
+						'url'			=> array('VCHAR:255', ''),
+					),
+					'PRIMARY_KEY'	=> 'id',
+					'KEYS'			=> array(
+						'idx_topic'		=> array('INDEX', 'topic_id'),
+					),
 				),
 			),
 		);
 	}
-
+	
 	public function revert_schema()
 	{
 		return array(
-			'drop_columns'	=> array(
-				TOPICS_TABLE	=> array(
-					$this->config_prefix . '_url',
-					//$this->config_prefix . '_data',
-				),
+			'drop_tables'    => array(
+				$this->table_prefix . TABLES::VIDEOS,
 			),
 		);
 	}
-
+	
 	public function update_data()
 	{
 		$re = array();
