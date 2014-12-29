@@ -153,21 +153,18 @@ class main_listener implements EventSubscriberInterface
 	 * helper
 	 * @return boolean
 	 */
-	private function is_new_topic_or_edit_first_post($data) {
+	private function is_new_topic($data) {
 
-		$mode = false;
-			
-		if (empty($data['mode']))
-		{
-			return false;
-		}
-		
 		$mode = $data['mode'];
-		$is_new_topic = $mode == 'post';
-		if ($is_new_topic)
-		{
-			return true;
-		}
+		return $mode == 'post';
+	}
+	
+	/**
+	 * helper
+	 * @return boolean
+	 */
+	private function is_edit_first_post($data) {
+		$mode = $data['mode'];
 		if ($mode == 'edit')
 		{
 			$topic_id = $post_id = $topic_first_post_id = false;
@@ -175,12 +172,12 @@ class main_listener implements EventSubscriberInterface
 			{
 				$topic_id = $data['post_data']['topic_id'];
 			}
-				
+	
 			if (! empty($data['post_data']['post_id']))
 			{
 				$post_id = $data['post_data']['post_id'];
 			}
-				
+	
 			if (! empty($data['post_data']['topic_first_post_id']))
 			{
 				$topic_first_post_id = $data['post_data']['topic_first_post_id'];
@@ -189,7 +186,7 @@ class main_listener implements EventSubscriberInterface
 			if ($is_edit_first_post)
 			{
 				return true;
-			}				
+			}
 		}
 		return false;
 	}
@@ -205,7 +202,9 @@ class main_listener implements EventSubscriberInterface
 	{
 		$data = $event->get_data();
 		
-		if (!$this->is_new_topic_or_edit_first_post($data))
+		$is_edit_first_post = $this->is_edit_first_post($data);
+		$is_new_topic =  $this->is_new_topic($data);
+		if (!($is_new_topic || $is_edit_first_post))
 		{
 			return;
 		}

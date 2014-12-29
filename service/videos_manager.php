@@ -57,6 +57,8 @@ class videos_manager
 	{
 		$topic_id = (int) $topic_id;
 		
+		$this->delete_video_from_topic($topic_id);
+		
 		$sql_ary = array(
 			'topic_id'	=> $topic_id,
 			'title'		=> $video->get_title(),
@@ -69,10 +71,26 @@ class videos_manager
 	}
 	
 	/**
+	 * If there is a video assigned to the topic, it is deleted.
+	 *
+	 * @param $topic_id the id of the topic
+	 * @return count of deleted videos
+	 */
+	public function delete_video_from_topic($topic_id)
+	{
+		$topic_id = (int) $topic_id;
+		$sql = 'DELETE
+			FROM ' . $this->table_prefix . TABLES::VIDEOS . '
+			WHERE topic_id = ' . $topic_id;
+		$this->db->sql_query($sql);
+		return $this->db->sql_affectedrows();
+	}
+	
+	/**
 	 * Get video for the given topic_id.
 	 *
 	 * @param int $topic_id
-	 * @return the video or false
+	 * @return the video or false if no video was found
 	 */
 	public function get_video_for_topic_id($topic_id)
 	{
