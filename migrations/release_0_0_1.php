@@ -39,6 +39,8 @@ class release_0_0_1 extends \phpbb\db\migration\migration
 						'title'			=> array('VCHAR:255', ''),
 						'html'			=> array('TEXT', ''),
 						'url'			=> array('VCHAR:255', ''),
+						'last_update'	=> array('TIMESTAMP', 0),
+						'error'			=> array('BOOL', 0),
 					),
 					'PRIMARY_KEY'	=> 'id',
 					'KEYS'			=> array(

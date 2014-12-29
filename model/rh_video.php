@@ -32,6 +32,21 @@ class rh_video
 	private $html;
 
 	/**
+	 * indicates when the html was updated the last time.
+	 * 
+	 * int
+	 */
+	private $last_update;
+	
+	/**
+	 * indicates if there is an error with the video, e.g.
+	 * used when the cached html is updated, and the update fails.
+	 * 
+	 * @var boolean
+	 */
+	private $error;
+
+	/**
 	 * Creates a new instance from the given url using OEmbed.
 	 * 
 	 * @param string $url
@@ -59,7 +74,7 @@ class rh_video
 			{
 				return false;
 			}
-			return new rh_video($response->getTitle(), $url, $response->getHtml());
+			return new rh_video($response->getTitle(), $url, $response->getHtml(), time(), false);
 		}
 		catch (\Exception $e)
 		{
@@ -69,16 +84,21 @@ class rh_video
 	}
 
 	/**
-	 *
+	 * Constructor
+	 * 
 	 * @param string $title        	
 	 * @param string $url        	
-	 * @param string $html        	
+	 * @param string $html
+	 * @param int $last_update        	
+	 * @param string $has_error        	
 	 */
-	public function __construct($title, $url, $html)
+	public function __construct($title, $url, $html, $last_update, $has_error)
 	{
 		$this->title = $title;
 		$this->url = $url;
 		$this->html = $html;
+		$this->last_update = $last_update;
+		$this->error = $has_error;
 	}
 
 	function get_title()
@@ -96,4 +116,14 @@ class rh_video
 		return $this->html;
 	}
 
+	public function get_last_update()
+	{
+		return $this->last_update;
+	}
+	
+	public function has_error()
+	{
+		return $this->error;
+	}
+	
 }

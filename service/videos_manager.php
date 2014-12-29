@@ -22,6 +22,12 @@ use robertheim\videos\TABLES;
 class videos_manager
 {
 
+	/**
+	 * After 31 days the html-data is updated by requesting the oEmbed API again.
+	 * @var int
+	 */
+	const CACHETIME = 2678400;
+
 	private $db;
 	private $config;
 	private $auth;
@@ -71,7 +77,7 @@ class videos_manager
 	public function get_video_for_topic_id($topic_id)
 	{
 		$videos = $this->get_video_for_topic_ids(array($topic_id));
-		if (sizeof($videos)>0)
+		if (sizeof($videos) > 0)
 		{
 			return $videos[0]['video'];
 		}
@@ -102,12 +108,31 @@ class videos_manager
 		$topic_to_video_map = array();
 		
 		while ($row = $this->db->sql_fetchrow($result)) {
-			$video = new rh_video($row['title'], $row['url'], $row['html']);
-			// TODO renew html after a time
-			// if ($video->get_last_html()+cachetime<time()){
-			// update_video_data($video)
-			// if error then set error_flag of video = true
-			// }
+			$video = false;
+			// renew html if cachetime is running out otherwise use db data.
+			$last_update = $row['last_update'];
+			if ($last_update + self::CACHETIME < time())
+			{
+				$last_update = time();
+				$video = rh_video::fromUrl($row['url']);
+				$new_title = $new_html = $error = false;
+				if (false === $video)
+				{
+					$error = true;
+					$video = new rh_video($row['title'], $row['url'], $row['html'], $last_update, $error);
+				}
+				else
+				{
+					$new_html = $video->get_html();
+					$new_title = $video->get_title();
+					$last_update = $video->get_last_update();
+				}
+				$this->update_video($row['id'], $new_title, $new_html, $last_update, $error);
+			}
+			else
+			{
+				$video = new rh_video($row['title'], $row['url'], $row['html'], $row['last_update'], $row['error']);
+			}
 			$topic_to_video_map[] = array(
 				'topic_id' => $row['topic_id'],
 				'video' => $video,
@@ -115,6 +140,35 @@ class videos_manager
 		}
 		$this->db->sql_freeresult($result);		
 		return $topic_to_video_map;		
+	}
+	
+	/**
+	 * Updates the videos db entry. If error is true only the error and last_update field are changed.
+	 * 
+	 * @param int $video_id
+	 * @param string $new_title
+	 * @param string $new_html
+	 * @param int $last_update
+	 * @param boolean $error
+	 */
+	private function update_video($video_id, $new_title, $new_html, $last_update, $error)
+	{
+		$video_id = (int) $video_id;
+		$sql_ary = array(
+			'error'			=> $error,
+			'last_update'	=> $last_update,
+		);
+		if (!$error)
+		{
+			$sql_ary = array_merge($sql_ary, array(
+				'title'	=> $new_title,
+				'html'	=> $new_html,
+			));
+		}
+		$sql = 'UPDATE ' . $this->table_prefix . TABLES::VIDEOS . '
+			SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
+			WHERE id = ' . $video_id;
+		$this->db->sql_query($sql);
 	}
 }
 

@@ -259,28 +259,30 @@ class main_listener implements EventSubscriberInterface
 		{
 			return;
 		}
-		// TODO update html when chachetime is out of date @see videos_manager
-		// if ($video->is_error()) {
-		// $video_url = $video->get_url();
-		// $video_link = "<a href=\"$video_url\">$video_url</a>";
-		// $error_msg = $this->user->lang('RH_VIDEOS_VIDEO_COULD_NOT_BE_LOADED', $video_link);
-		
-		// $this->template->assign_vars(
-		// 	array(
-		// 		'S_RH_VIDEOS_INCLUDE_CSS' => true,
-		// 		'S_RH_VIDEOS_SHOW' => true,
-		//		'RH_VIDEOS_ERROR' => true,
-		// 		'RH_VIDEOS_VIDEO_URL' => $video->get_url(),
-		// 		'RH_VIDEOS_ERROR_MSG' => $error_msg,
-		// 	));		
-				// }
-		$this->template->assign_vars(
-			array(
-				'S_RH_VIDEOS_INCLUDE_CSS' => true,
-				'S_RH_VIDEOS_SHOW' => true,
-				'RH_VIDEOS_VIDEO_URL' => $video->get_url(),
-				'RH_VIDEOS_VIDEO_TITLE' => $video->get_title(),
-				'RH_VIDEOS_VIDEO_HTML' => $video->get_html(),
-			));		
+		if ($video->has_error()) {
+			
+			$video_url = $video->get_url();
+			$video_link = "<a href=\"$video_url\">$video_url</a>";
+			$error_msg = $this->user->lang('RH_VIDEOS_VIDEO_COULD_NOT_BE_LOADED', $video_link);
+			$this->template->assign_vars(
+				array(
+					'S_RH_VIDEOS_INCLUDE_CSS' => true,
+					'S_RH_VIDEOS_SHOW' => true,
+					'S_RH_VIDEOS_ERROR' => true,
+					'RH_VIDEOS_VIDEO_URL' => $video->get_url(),
+					'RH_VIDEOS_ERROR_MSG' => $error_msg,
+				));		
+		}
+		else
+		{
+			$this->template->assign_vars(
+				array(
+					'S_RH_VIDEOS_INCLUDE_CSS' => true,
+					'S_RH_VIDEOS_SHOW' => true,
+					'RH_VIDEOS_VIDEO_URL' => $video->get_url(),
+					'RH_VIDEOS_VIDEO_TITLE' => $video->get_title(),
+					'RH_VIDEOS_VIDEO_HTML' => $video->get_html(),
+				));
+		}		
 	}
 }
