@@ -44,7 +44,7 @@ class release_0_0_1 extends \phpbb\db\migration\migration
 					),
 					'PRIMARY_KEY'	=> 'id',
 					'KEYS'			=> array(
-						'idx_topic'		=> array('INDEX', 'topic_id'),
+						'idx_topic'		=> array('UNIQUE', 'topic_id'),
 					),
 				),
 			),
