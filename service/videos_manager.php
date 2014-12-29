@@ -94,7 +94,7 @@ class videos_manager
 	 */
 	public function get_video_for_topic_id($topic_id)
 	{
-		$videos = $this->get_video_for_topic_ids(array($topic_id));
+		$videos = $this->get_videos_for_topic_ids(array($topic_id));
 		if (sizeof($videos) > 0)
 		{
 			return $videos[0]['video'];
@@ -111,7 +111,7 @@ class videos_manager
 	 * @param array $topic_ids
 	 * @return array e.g. [['topic_id'=> int, 'video' => object], ... ]
 	 */
-	public function get_video_for_topic_ids(array $topic_ids)
+	public function get_videos_for_topic_ids(array $topic_ids)
 	{
 		$sql_array = array(
 			'SELECT'	=> '*',
@@ -150,7 +150,7 @@ class videos_manager
 			}
 			else
 			{
-				$video = new rh_video($row['title'], $row['url'], $row['html'], $row['last_update'], $row['thumbnail_url'], $row['error']);
+				$video = new rh_video($row['title'], $row['url'], $row['html'], $row['thumbnail_url'], $row['last_update'], $row['error']);
 			}
 			$topic_to_video_map[] = array(
 				'topic_id' => $row['topic_id'],
