@@ -230,7 +230,11 @@ class main_listener implements EventSubscriberInterface
 			// use data from db
 			$topic_id = (int) $data['topic_id'];
 			$video = $this->videos_manager->get_video_for_topic_id($topic_id);
-			$video_url = $video->get_url();
+			$video_url = '';
+			if (false !== $video)
+			{
+				$video_url = $video->get_url();
+			}
 		}
 		$data['page_data']['RH_VIDEOS_SHOW_FIELD'] = true;
 		$data['page_data']['RH_VIDEO_URL'] = $video_url;
