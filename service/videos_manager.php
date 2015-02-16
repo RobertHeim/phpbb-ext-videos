@@ -44,21 +44,21 @@ class videos_manager
 		$this->auth			= $auth;
 		$this->table_prefix	= $table_prefix;
 	}
-	
+
 	public function set_video_url_of_topic($topic_id, $video_url)
 	{
 		$topic_id = (int) $topic_id;
 		$sql = 'UPDATE '. TOPICS_TABLE . ' SET ' . PREFIXES::CONFIG . '_url' . '="'.$this->db->sql_escape($video_url).'"
 				WHERE topic_id='.$topic_id;
-		$this->db->sql_query($sql);		
+		$this->db->sql_query($sql);
 	}
 
 	public function store_video(rh_video $video, $topic_id)
 	{
 		$topic_id = (int) $topic_id;
-		
+
 		$this->delete_video_from_topic($topic_id);
-		
+
 		$sql_ary = array(
 			'topic_id'	=> $topic_id,
 			'title'		=> $video->get_title(),
@@ -66,10 +66,10 @@ class videos_manager
 			'url'		=> $video->get_url(),
 		);
 		$sql = 'INSERT INTO ' . $this->table_prefix . TABLES::VIDEOS . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
-		
+
 		$this->db->sql_query($sql);
 	}
-	
+
 	/**
 	 * If there is a video assigned to the topic, it is deleted.
 	 *
@@ -85,7 +85,7 @@ class videos_manager
 		$this->db->sql_query($sql);
 		return $this->db->sql_affectedrows();
 	}
-	
+
 	/**
 	 * Get video for the given topic_id.
 	 *
@@ -104,15 +104,18 @@ class videos_manager
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Get videos for the given topic_ids.
-	 * 
+	 *
 	 * @param array $topic_ids
 	 * @return array e.g. [['topic_id'=> int, 'video' => object], ... ]
 	 */
 	public function get_videos_for_topic_ids(array $topic_ids)
 	{
+		if (is_null($topic_ids) || empty($ropic_ids)) {
+			return array();
+		}
 		$sql_array = array(
 			'SELECT'	=> '*',
 			'FROM'		=> array(
@@ -122,9 +125,9 @@ class videos_manager
 		);
 		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql);
-		
+
 		$topic_to_video_map = array();
-		
+
 		while ($row = $this->db->sql_fetchrow($result)) {
 			$video = false;
 			// renew html if cachetime is running out otherwise use db data.
@@ -157,13 +160,13 @@ class videos_manager
 				'video' => $video,
 			);
 		}
-		$this->db->sql_freeresult($result);		
-		return $topic_to_video_map;		
+		$this->db->sql_freeresult($result);
+		return $topic_to_video_map;
 	}
-	
+
 	/**
 	 * Updates the videos db entry. If error is true only the error and last_update field are changed.
-	 * 
+	 *
 	 * @param int $video_id
 	 * @param string $new_title
 	 * @param string $new_html
