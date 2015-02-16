@@ -113,7 +113,7 @@ class videos_manager
 	 */
 	public function get_videos_for_topic_ids(array $topic_ids)
 	{
-		if (is_null($topic_ids) || empty($ropic_ids)) {
+		if (is_null($topic_ids) || empty($topic_ids)) {
 			return array();
 		}
 		$sql_array = array(
