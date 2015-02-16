@@ -32,7 +32,7 @@ class main_listener implements EventSubscriberInterface
 			'core.submit_post_end'							=> 'submit_post_end',
 		);
 	}
-	
+
 	/**
 	 * Used during a new video post to store video data, so we do not need to call oEmbed API twice.
 	 *
@@ -57,10 +57,10 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * Constructor
 	 */
-	public function __construct(\phpbb\config\config $config, 
-		\robertheim\videos\service\videos_manager $videos_manager, 
-		\phpbb\controller\helper $helper, \phpbb\request\request $request, 
-		\phpbb\user $user, \phpbb\template\template $template, 
+	public function __construct(\phpbb\config\config $config,
+		\robertheim\videos\service\videos_manager $videos_manager,
+		\phpbb\controller\helper $helper, \phpbb\request\request $request,
+		\phpbb\user $user, \phpbb\template\template $template,
 		\phpbb\auth\auth $auth)
 	{
 		$this->config = $config;
@@ -74,7 +74,7 @@ class main_listener implements EventSubscriberInterface
 
 	/**
 	 * Reads the request variable 'rh_video_url'.
-	 * 
+	 *
 	 * @return rh_video url
 	 */
 	private function get_video_url_from_post_request()
@@ -143,27 +143,30 @@ class main_listener implements EventSubscriberInterface
 		}
 	}
 
-	private function is_videos_enabled_in_forum($forum_id) {
+	private function is_videos_enabled_in_forum($forum_id)
+	{
 		// TODO configure via ACP
 		$video_forum_ids = array(1,2);
-		return in_array($forum_id, $video_forum_ids);		
+		return in_array($forum_id, $video_forum_ids);
 	}
-	
+
 	/**
 	 * helper
 	 * @return boolean
 	 */
-	private function is_new_topic($data) {
+	private function is_new_topic($data)
+	{
 
 		$mode = $data['mode'];
 		return $mode == 'post';
 	}
-	
+
 	/**
 	 * helper
 	 * @return boolean
 	 */
-	private function is_edit_first_post($data) {
+	private function is_edit_first_post($data)
+	{
 		$mode = $data['mode'];
 		if ($mode == 'edit')
 		{
@@ -172,12 +175,12 @@ class main_listener implements EventSubscriberInterface
 			{
 				$topic_id = $data['post_data']['topic_id'];
 			}
-	
+
 			if (! empty($data['post_data']['post_id']))
 			{
 				$post_id = $data['post_data']['post_id'];
 			}
-	
+
 			if (! empty($data['post_data']['topic_first_post_id']))
 			{
 				$topic_first_post_id = $data['post_data']['topic_first_post_id'];
@@ -190,18 +193,18 @@ class main_listener implements EventSubscriberInterface
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Event: core.posting_modify_template_vars
 	 * Send the video_url on edits or preview to the template
-	 * 
+	 *
 	 * @param
 	 *        	$event
 	 */
 	public function posting_modify_template_vars($event)
 	{
 		$data = $event->get_data();
-		
+
 		$is_edit_first_post = $this->is_edit_first_post($data);
 		$is_new_topic =  $this->is_new_topic($data);
 		if (!($is_new_topic || $is_edit_first_post))
@@ -212,12 +215,12 @@ class main_listener implements EventSubscriberInterface
 		{
 			return;
 		}
-		$forum_id = $data['forum_id'];		
+		$forum_id = $data['forum_id'];
 		if (! $this->is_videos_enabled_in_forum($forum_id))
 		{
 			return;
 		}
-		
+
 		$video_url = '';
 		// do we got some preview-data?
 		if ($this->request->is_set_post('rh_video_url'))
@@ -244,7 +247,7 @@ class main_listener implements EventSubscriberInterface
 	/**
 	 * Event: core.viewtopic_assign_template_vars_before
 	 * assign video_url to topic-template
-	 * 
+	 *
 	 * @param
 	 *        	$event
 	 */
@@ -263,7 +266,7 @@ class main_listener implements EventSubscriberInterface
 			return;
 		}
 		if ($video->has_error()) {
-			
+
 			$video_url = $video->get_url();
 			$video_link = "<a href=\"$video_url\">$video_url</a>";
 			$error_msg = $this->user->lang('RH_VIDEOS_VIDEO_COULD_NOT_BE_LOADED', $video_link);
@@ -274,7 +277,7 @@ class main_listener implements EventSubscriberInterface
 					'S_RH_VIDEOS_ERROR' => true,
 					'RH_VIDEOS_VIDEO_URL' => $video->get_url(),
 					'RH_VIDEOS_ERROR_MSG' => $error_msg,
-				));		
+				));
 		}
 		else
 		{
@@ -286,6 +289,6 @@ class main_listener implements EventSubscriberInterface
 					'RH_VIDEOS_VIDEO_TITLE' => $video->get_title(),
 					'RH_VIDEOS_VIDEO_HTML' => $video->get_html(),
 				));
-		}		
+		}
 	}
 }
