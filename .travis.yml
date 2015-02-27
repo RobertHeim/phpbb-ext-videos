@@ -41,9 +41,6 @@ branches:
     - /^develop-.*$/
 
 install:
-  - cd RobertHeim/phpbb-ext-videos
-  - php composer.phar install --dev --no-interaction --prefer-source
-  - cd ../../
   - php composer.phar install --dev --no-interaction --prefer-source
   - travis/prepare-phpbb.sh $EXTNAME $PHPBB_BRANCH
   - cd ../../phpBB3
