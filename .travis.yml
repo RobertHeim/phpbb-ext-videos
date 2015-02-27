@@ -41,7 +41,7 @@ branches:
     - /^develop-.*$/
 
 install:
-  - cd $EXTNAME
+  - cd RobertHeim/phpbb-ext-videos
   - php composer.phar install --dev --no-interaction --prefer-source
   - cd ../../
   - php composer.phar install --dev --no-interaction --prefer-source
