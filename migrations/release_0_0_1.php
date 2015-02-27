@@ -9,9 +9,9 @@
 
 namespace robertheim\videos\migrations;
 
-use robertheim\videos\permissions;
-use robertheim\videos\prefixes;
-use robertheim\videos\tables;
+use \robertheim\videos\permissions;
+use \robertheim\videos\prefixes;
+use \robertheim\videos\tables;
 
 class release_0_0_1 extends \phpbb\db\migration\migration
 {
