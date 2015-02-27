@@ -8,7 +8,7 @@
  */
 namespace robertheim\videos\model;
 
-use robertheim\videos\lib\Alb\OEmbed\Simple;
+use \Alb\OEmbed\Simple;
 
 /**
  * Holds relevant information about a video
