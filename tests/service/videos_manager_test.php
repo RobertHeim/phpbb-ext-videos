@@ -11,12 +11,12 @@ namespace robertheim\vidos\tests\service;
 
 class videos_manager_test extends \phpbb_database_test_case
 {
-	
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(dirname(__FILE__).'/videos.xml');
 	}
-	
+
 	static protected function setup_extensions()
 	{
 		return array('robertheim/videos');

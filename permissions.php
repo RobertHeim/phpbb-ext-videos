@@ -7,7 +7,7 @@
  */
 namespace robertheim\videos;
 
-abstract class PERMISSIONS
+abstract class permissions
 {
 
 	const POST_VIDEO = 'u_rhvideos_post_video';

@@ -9,32 +9,34 @@
 
 namespace robertheim\videos\migrations;
 
-use robertheim\videos\PERMISSIONS;
-use robertheim\videos\PREFIXES;
-use robertheim\videos\TABLES;
+use robertheim\videos\permissions;
+use robertheim\videos\prefixes;
+use robertheim\videos\tables;
 
 class release_0_0_1 extends \phpbb\db\migration\migration
 {
 	protected $version = '0.0.1-DEV';
 
-	protected $config_prefix = PREFIXES::CONFIG;
+	protected $config_prefix = prefixes::CONFIG;
 
-	public function effectively_installed() {
+	public function effectively_installed()
+	{
 		$installed_version = $this->config[$this->config_prefix.'_version'];
 		return isset($installed_version) && version_compare($installed_version, $this->version, '>=');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v310\dev');
 	}
 
-	public function update_schema() {
+	public function update_schema()
+	{
 		return array(
 			'add_tables' => array(
-				$this->table_prefix . TABLES::VIDEOS	=> array(
+				$this->table_prefix . tables::VIDEOS	=> array(
 					'COLUMNS'		=> array(
-						'id'			=> array('UINT', NULL, 'auto_increment'),
+						'id'			=> array('UINT', null, 'auto_increment'),
 						'topic_id'		=> array('UINT', 0),
 						'title'			=> array('VCHAR:255', ''),
 						'html'			=> array('TEXT', ''),
@@ -51,33 +53,32 @@ class release_0_0_1 extends \phpbb\db\migration\migration
 			),
 		);
 	}
-	
+
 	public function revert_schema()
 	{
 		return array(
 			'drop_tables'    => array(
-				$this->table_prefix . TABLES::VIDEOS,
+				$this->table_prefix . tables::VIDEOS,
 			),
 		);
 	}
-	
+
 	public function update_data()
 	{
 		$re = array();
 		// add permissions
-		$re[] = array('permission.add', array(PERMISSIONS::POST_VIDEO));
-		
+		$re[] = array('permission.add', array(permissions::POST_VIDEO));
+
 		// Set permissions for the board roles
 		if ($this->role_exists('ROLE_USER_FULL')) {
-			$re[] = array('permission.permission_set', array('ROLE_USER_FULL', PERMISSIONS::POST_VIDEO));
+			$re[] = array('permission.permission_set', array('ROLE_USER_FULL', permissions::POST_VIDEO));
 		}
 		if ($this->role_exists('ROLE_USER_STANDARD')) {
-			$re[] = array('permission.permission_set', array('ROLE_USER_STANDARD', PERMISSIONS::POST_VIDEO));
+			$re[] = array('permission.permission_set', array('ROLE_USER_STANDARD', permissions::POST_VIDEO));
 		}
 		$re[] = array('config.add', array($this->config_prefix.'_version', $this->version));
 		return $re;
 	}
-	
 
 	/**
 	 * Checks whether the given role does exist or not.
@@ -95,5 +96,4 @@ class release_0_0_1 extends \phpbb\db\migration\migration
 		$this->db->sql_freeresult($result);
 		return $role_id > 0;
 	}
-
 }

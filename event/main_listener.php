@@ -13,8 +13,8 @@ namespace robertheim\videos\event;
  *
  */
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use robertheim\videos\PREFIXES;
-use robertheim\videos\PERMISSIONS;
+use robertheim\videos\prefixes;
+use robertheim\videos\permissions;
 use robertheim\videos\model\rh_video;
 
 /**
@@ -102,7 +102,7 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function modify_posting_parameters($event)
 	{
-		if ($this->auth->acl_get(PERMISSIONS::POST_VIDEO))
+		if ($this->auth->acl_get(permissions::POST_VIDEO))
 		{
 			$data = $event->get_data();
 			$video_url = $this->get_video_url_from_post_request();
@@ -132,7 +132,7 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function submit_post_end($event)
 	{
-		if ($this->auth->acl_get(PERMISSIONS::POST_VIDEO))
+		if ($this->auth->acl_get(permissions::POST_VIDEO))
 		{
 			$event_data = $event->get_data();
 			$topic_id = (int) $event_data['data']['topic_id'];
@@ -211,7 +211,7 @@ class main_listener implements EventSubscriberInterface
 		{
 			return;
 		}
-		if (!$this->auth->acl_get(PERMISSIONS::POST_VIDEO))
+		if (!$this->auth->acl_get(permissions::POST_VIDEO))
 		{
 			return;
 		}

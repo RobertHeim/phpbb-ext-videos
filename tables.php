@@ -9,7 +9,7 @@
 
 namespace robertheim\videos;
 
-class TABLES
+class tables
 {
 	const VIDEOS = 'rh_videos';
 }

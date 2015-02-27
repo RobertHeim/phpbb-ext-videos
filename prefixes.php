@@ -7,7 +7,7 @@
  */
 namespace robertheim\videos;
 
-abstract class PREFIXES
+abstract class prefixes
 {
 
 	const CONFIG = 'robertheim_videos';

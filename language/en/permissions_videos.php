@@ -37,9 +37,8 @@ if (empty($lang) || !is_array($lang))
 // ’ » “ ” …
 //
 
-use robertheim\videos\PERMISSIONS;
+use robertheim\videos\permissions;
 
 $lang = array_merge($lang, array(
-	'ACL_'.mb_strtoupper(PERMISSIONS::POST_VIDEO)			=> 'Can use RH Videos',
+	'ACL_'.mb_strtoupper(permissions::POST_VIDEO)			=> 'Can use RH Videos',
 ));
-

@@ -13,8 +13,8 @@ namespace robertheim\videos\service;
  * @ignore
  */
 use robertheim\videos\model\rh_video;
-use robertheim\videos\PREFIXES;
-use robertheim\videos\TABLES;
+use robertheim\videos\prefixes;
+use robertheim\videos\tables;
 
 /**
 * Handles operations with videos.
@@ -48,7 +48,7 @@ class videos_manager
 	public function set_video_url_of_topic($topic_id, $video_url)
 	{
 		$topic_id = (int) $topic_id;
-		$sql = 'UPDATE '. TOPICS_TABLE . ' SET ' . PREFIXES::CONFIG . '_url' . '="'.$this->db->sql_escape($video_url).'"
+		$sql = 'UPDATE '. TOPICS_TABLE . ' SET ' . prefixes::CONFIG . '_url' . '="'.$this->db->sql_escape($video_url).'"
 				WHERE topic_id='.$topic_id;
 		$this->db->sql_query($sql);
 	}
@@ -65,7 +65,7 @@ class videos_manager
 			'html'		=> $video->get_html(),
 			'url'		=> $video->get_url(),
 		);
-		$sql = 'INSERT INTO ' . $this->table_prefix . TABLES::VIDEOS . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+		$sql = 'INSERT INTO ' . $this->table_prefix . tables::VIDEOS . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 
 		$this->db->sql_query($sql);
 	}
@@ -80,7 +80,7 @@ class videos_manager
 	{
 		$topic_id = (int) $topic_id;
 		$sql = 'DELETE
-			FROM ' . $this->table_prefix . TABLES::VIDEOS . '
+			FROM ' . $this->table_prefix . tables::VIDEOS . '
 			WHERE topic_id = ' . $topic_id;
 		$this->db->sql_query($sql);
 		return $this->db->sql_affectedrows();
@@ -119,7 +119,7 @@ class videos_manager
 		$sql_array = array(
 			'SELECT'	=> '*',
 			'FROM'		=> array(
-				$this->table_prefix . TABLES::VIDEOS	=> 'v',
+				$this->table_prefix . tables::VIDEOS	=> 'v',
 			),
 			'WHERE'	=> $this->db->sql_in_set('v.topic_id', $topic_ids),
 		);
@@ -189,10 +189,9 @@ class videos_manager
 				'thumbnail_url'	=> $new_thumbnail_url,
 			));
 		}
-		$sql = 'UPDATE ' . $this->table_prefix . TABLES::VIDEOS . '
+		$sql = 'UPDATE ' . $this->table_prefix . tables::VIDEOS . '
 			SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
 			WHERE id = ' . $video_id;
 		$this->db->sql_query($sql);
 	}
 }
-
