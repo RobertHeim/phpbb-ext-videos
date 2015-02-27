@@ -11,7 +11,7 @@ namespace robertheim\videos\tests;
 
 use \robertheim\videos\service\videos_manager;
 
-class test_base extends \phpbb_database_test_case
+abstract class test_base extends \phpbb_database_test_case
 {
 	/** @var \robertheim\videos\service\videos_manager */
 	protected $videos_manager;
