@@ -48,8 +48,8 @@ class videos_manager
 	public function set_video_url_of_topic($topic_id, $video_url)
 	{
 		$topic_id = (int) $topic_id;
-		$sql = 'UPDATE '. TOPICS_TABLE . ' SET ' . prefixes::CONFIG . '_url' . '="'.$this->db->sql_escape($video_url).'"
-				WHERE topic_id='.$topic_id;
+		$sql = 'UPDATE ' . TOPICS_TABLE . ' SET ' . prefixes::CONFIG . '_url' . '="' . $this->db->sql_escape($video_url) . '"
+				WHERE topic_id=' . $topic_id;
 		$this->db->sql_query($sql);
 	}
 
@@ -74,7 +74,7 @@ class videos_manager
 	 * If there is a video assigned to the topic, it is deleted.
 	 *
 	 * @param $topic_id the id of the topic
-	 * @return count of deleted videos
+	 * @return integer count of deleted videos
 	 */
 	public function delete_video_from_topic($topic_id)
 	{
@@ -90,7 +90,7 @@ class videos_manager
 	 * Get video for the given topic_id.
 	 *
 	 * @param int $topic_id
-	 * @return the video or false if no video was found
+	 * @return rh_video the video or false if no video was found
 	 */
 	public function get_video_for_topic_id($topic_id)
 	{
@@ -101,7 +101,7 @@ class videos_manager
 		}
 		else
 		{
-			return false;
+			return null;
 		}
 	}
 
@@ -137,7 +137,7 @@ class videos_manager
 				$last_update = time();
 				$video = rh_video::fromUrl($row['url']);
 				$new_title = $new_html = $new_thumbnail_url = $error = false;
-				if (false === $video)
+				if (null === $video)
 				{
 					$error = true;
 					$video = new rh_video($row['title'], $row['url'], $row['html'], $row['thumbnail_url'], $last_update, $error);

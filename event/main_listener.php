@@ -234,7 +234,7 @@ class main_listener implements EventSubscriberInterface
 			$topic_id = (int) $data['topic_id'];
 			$video = $this->videos_manager->get_video_for_topic_id($topic_id);
 			$video_url = '';
-			if (false !== $video)
+			if (null !== $video)
 			{
 				$video_url = $video->get_url();
 			}
@@ -261,7 +261,7 @@ class main_listener implements EventSubscriberInterface
 		}
 		$topic_id = (int) $data['topic_data']['topic_id'];
 		$video = $this->videos_manager->get_video_for_topic_id($topic_id);
-		if (false === $video)
+		if (null === $video)
 		{
 			return;
 		}

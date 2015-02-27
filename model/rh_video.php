@@ -54,9 +54,8 @@ class rh_video
 	/**
 	 * Creates a new instance from the given url using OEmbed.
 	 *
-	 * @param string $url
-	 *        	the url to fetch.
-	 * @return the new instance or false if an error occured.
+	 * @param string $url the url to fetch.
+	 * @return rh_video the new instance or false if an error occured.
 	 */
 	public static function fromUrl($url)
 	{
