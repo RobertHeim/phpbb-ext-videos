@@ -1,17 +1,25 @@
 phpbb-ext-videos
 ================
 
-phpBB 3.1 extension, that adds a video-url field when posting a new topic and auto embeds the video before the first post.
+phpBB 3.1 extension, that adds a url field when posting a new topic and auto embeds the given media before the first post.
 
 ## Features
 
-* post a video-url when posting a topic
+* Post an url (with oembed support) when posting a topic
+* The media is embedded before the first-post on each page of the topic
 * enabled/disable on a per forum basis
-* embed video of providers that support oEmbed, e.g.:
-  * Youtube
-  * Vimeo
-  * Daily Motion
 * caches oEmebed API results (TODO ACP module allows pruning the cache)
+* embed media of providers that support oEmbed, e.g.:
+  * Video
+   * Youtube
+   * Vimeo
+   * Daily Motion
+   * ...
+  * Audio
+   * SoundCloud
+   * ... 
+  * and many more: http://oembed.com/#section7
+
 
 ## Installation
 
