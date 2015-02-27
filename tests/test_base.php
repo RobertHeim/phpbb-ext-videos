@@ -28,8 +28,8 @@ abstract class test_base extends \phpbb_database_test_case
 		global $table_prefix;
 		$this->auth = $this->getMock('\phpbb\auth\auth');
 		$config = new \phpbb\config\config(array());
-		$this->db = $this->get_db();
-		$this->videos_manager = new videos_manager($this->db, $config, $auth, $table_prefix);
+		$this->db = $this->new_dbal();
+		$this->videos_manager = new videos_manager($this->db, $config, $this->auth, $table_prefix);
 	}
 
 }
