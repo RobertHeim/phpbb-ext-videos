@@ -147,7 +147,7 @@ class videos_manager
 			}
 			else
 			{
-				$video = new rh_video($row['title'], $row['url'], $row['html'], $row['thumbnail_url'], $row['last_update'], $row['error']);
+				$video = new rh_video($row['title'], $row['url'], $row['html'], $row['thumbnail_url'], $row['last_update'], ((int) $row['error']) > 0);
 			}
 			$topic_to_video_map[] = array(
 				'topic_id' => $row['topic_id'],
