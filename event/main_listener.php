@@ -8,14 +8,11 @@
 namespace robertheim\videos\event;
 
 /**
- *
  * @ignore
- *
  */
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use robertheim\videos\prefixes;
-use robertheim\videos\permissions;
-use robertheim\videos\model\rh_video;
+use \Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use \robertheim\videos\permissions;
+use \robertheim\videos\model\rh_video;
 
 /**
  * Event listener

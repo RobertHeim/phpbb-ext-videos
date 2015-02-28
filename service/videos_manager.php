@@ -12,9 +12,8 @@ namespace robertheim\videos\service;
 /**
  * @ignore
  */
-use robertheim\videos\model\rh_video;
-use robertheim\videos\prefixes;
-use robertheim\videos\tables;
+use \robertheim\videos\model\rh_video;
+use \robertheim\videos\tables;
 
 /**
 * Handles operations with videos.
@@ -45,14 +44,6 @@ class videos_manager
 		$this->table_prefix	= $table_prefix;
 	}
 
-	public function set_video_url_of_topic($topic_id, $video_url)
-	{
-		$topic_id = (int) $topic_id;
-		$sql = 'UPDATE ' . TOPICS_TABLE . ' SET ' . prefixes::CONFIG . '_url' . '="' . $this->db->sql_escape($video_url) . '"
-				WHERE topic_id=' . $topic_id;
-		$this->db->sql_query($sql);
-	}
-
 	public function store_video(rh_video $video, $topic_id)
 	{
 		$topic_id = (int) $topic_id;
@@ -60,10 +51,12 @@ class videos_manager
 		$this->delete_video_from_topic($topic_id);
 
 		$sql_ary = array(
-			'topic_id'	=> $topic_id,
-			'title'		=> $video->get_title(),
-			'html'		=> $video->get_html(),
-			'url'		=> $video->get_url(),
+			'topic_id'		=> $topic_id,
+			'title'			=> $video->get_title(),
+			'html'			=> $video->get_html(),
+			'url'			=> $video->get_url(),
+			'last_update'	=> $video->get_last_update(),
+			'thumbnail_url'	=> $video->get_thumbnail_url(),
 		);
 		$sql = 'INSERT INTO ' . $this->table_prefix . tables::VIDEOS . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 
@@ -129,7 +122,7 @@ class videos_manager
 		$topic_to_video_map = array();
 
 		while ($row = $this->db->sql_fetchrow($result)) {
-			$video = false;
+			$video = null;
 			// renew html if cachetime is running out otherwise use db data.
 			$last_update = $row['last_update'];
 			if ($last_update + self::CACHETIME < time())
@@ -153,7 +146,7 @@ class videos_manager
 			}
 			else
 			{
-				$video = new rh_video($row['title'], $row['url'], $row['html'], $row['thumbnail_url'], $row['last_update'], $row['error']);
+				$video = new rh_video($row['title'], $row['url'], $row['html'], $row['thumbnail_url'], $row['last_update'], ((int) $row['error']) > 0);
 			}
 			$topic_to_video_map[] = array(
 				'topic_id' => $row['topic_id'],

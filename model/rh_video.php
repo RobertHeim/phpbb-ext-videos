@@ -61,31 +61,31 @@ class rh_video
 	{
 		if (empty($url))
 		{
-			return false;
+			return null;
 		}
 		try
 		{
 			$response = Simple::request($url);
 			if (null == $response)
 			{
-				return false;
+				return null;
 			}
 			$title = $response->getTitle();
 			if (empty($title))
 			{
-				return false;
+				return null;
 			}
 			$html = $response->getHtml();
 			if (empty($html))
 			{
-				return false;
+				return null;
 			}
 			return new rh_video($title, $url, $html, $response->getThumbnailUrl(), time(), false);
 		}
 		catch (\Exception $e)
 		{
 			// probably could not establish a http connection to the given url
-			return false;
+			return null;
 		}
 	}
 
