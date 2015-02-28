@@ -80,12 +80,12 @@ class videos_manager_test extends \robertheim\videos\tests\test_base
 		$this->assertEquals('title' . ($videos[0]['topic_id'] == 1 ? '' : '2'), $videos[0]['video']->get_title());
 		$this->assertEquals('title' . ($videos[1]['topic_id'] == 1 ? '' : '2'), $videos[1]['video']->get_title());
 
-		$topic_ids = array(2, 3);
+		$topic_ids = array(2, 4);
 		$videos = $this->videos_manager->get_videos_for_topic_ids($topic_ids);
 		$this->assertEquals(1, sizeof($videos));
 		$this->assertEquals('title2', $videos[0]['video']->get_title());
 
-		$topic_ids = array(3);
+		$topic_ids = array(4);
 		$videos = $this->videos_manager->get_videos_for_topic_ids($topic_ids);
 		$this->assertEquals(0, sizeof($videos));
 
