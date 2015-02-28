@@ -19,7 +19,19 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	// config
-	'RH_VIDEOS_INSTALLED'					=> 'Installed Version: v%s',
+	'R_VIDEOS_INSTALLED'					=> 'Installed Version: v%s',
+
+	// ext settings page
+	'VIDEOS_MAINTENANCE'			=> 'Maintenance',
+	'VIDEOS_PRUNE_FORUMS'			=> 'Prune tags from forums with RH Videos disabled',
+	'VIDEOS_PRUNE_FORUMS_EXP'		=> 'This will DELETE all videos of topics where the topic resides in a forum with RH Videos disabled.',
+	'VIDEOS_PRUNE_FORUMS_CONFIRM'	=> 'This will DELETE all videos of topics where the topic resides in a forum with RH Videos disabled.',
+	'VIDEOS_PRUNE_FORUMS_DONE'			=> array(
+		0 => 'There were no topics in RH Videos disabled forums, that had a video.',
+		1 => '%d video has been deleted.',
+		2 => '%d videos have been deleted.',
+	),
+	'VIDEOS_SETTINGS_SAVED'			=> 'Configuration updated successfully.',
 
 	// forum settings page
 	'ACP_RH_VIDEOS_ENABLE'								=> 'Enable RH Videos',

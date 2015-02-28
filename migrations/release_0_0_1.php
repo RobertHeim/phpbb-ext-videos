@@ -86,6 +86,23 @@ class release_0_0_1 extends \phpbb\db\migration\migration
 		if ($this->role_exists('ROLE_USER_STANDARD')) {
 			$re[] = array('permission.permission_set', array('ROLE_USER_STANDARD', permissions::POST_VIDEO));
 		}
+
+
+		// acp module
+		$re[] = array('module.add', array(
+			'acp',
+			'ACP_CAT_DOT_MODS',
+			'ACP_VIDEOS_TITLE'
+		));
+		$re[] = array('module.add', array(
+			'acp', 'ACP_VIDEOS_TITLE', array(
+				'module_basename'	=> '\robertheim\videos\acp\videos_module',
+				'auth'				=> 'ext_robertheim/videos && acl_a_board',
+				'modes'				=> array('settings'),
+			),
+		));
+
+		// version
 		$re[] = array('config.add', array($this->config_prefix.'_version', $this->version));
 		return $re;
 	}
