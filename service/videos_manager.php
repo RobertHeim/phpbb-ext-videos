@@ -13,7 +13,6 @@ namespace robertheim\videos\service;
  * @ignore
  */
 use \robertheim\videos\model\rh_video;
-use \robertheim\videos\prefixes;
 use \robertheim\videos\tables;
 
 /**
