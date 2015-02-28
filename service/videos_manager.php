@@ -210,7 +210,7 @@ class videos_manager
 		}
 
 		// get ids of all videos that reside in a forum with tagging disabled.
-		$sql = 'SELECT tt.id
+		$sql = 'SELECT v.id
 			FROM ' . $this->table_prefix . tables::VIDEOS . ' v
 			WHERE EXISTS (
 				SELECT 1
