@@ -6,12 +6,22 @@
 		<column>forum_type</column>
 		<column>forum_desc</column>
 		<column>forum_rules</column>
+		<column>rh_videos_enabled</column>
 		<row>
 			<value>1</value>
 			<value>0</value>
 			<value>1</value>
 			<value></value>
 			<value></value>
+			<column>1</column>
+		</row>
+		<row>
+			<value>2</value>
+			<value>0</value>
+			<value>1</value>
+			<value></value>
+			<value></value>
+			<column>0</column>
 		</row>
 	</table>
 	<table name="phpbb_topics">
@@ -26,7 +36,12 @@
 		<row>
 			<value>2</value>
 			<value>1</value>
-			<value>Topic1</value>
+			<value>Topic2</value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>2</value>
+			<value>Topic3</value>
 		</row>
 	</table>
 	<table name="phpbb_rh_videos">
@@ -55,6 +70,16 @@
 			<value>html2</value>
 			<value>url2</value>
 			<value>thumbnail url2</value>
+			<value>0</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>3</value>
+			<value>title3</value>
+			<value>html3</value>
+			<value>url3</value>
+			<value>thumbnail url3</value>
 			<value>0</value>
 			<value>0</value>
 		</row>

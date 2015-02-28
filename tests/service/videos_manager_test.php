@@ -39,6 +39,16 @@ class videos_manager_test extends \robertheim\videos\tests\test_base
 		$this->assertEquals(null, $video);
 	}
 
+	public function test_delete_videos_from_videos_disabled_forums()
+	{
+		$topic_ids = array(1, 2, 3);
+		$topics = $this->videos_manager->get_videos_for_topic_ids($topic_ids);
+		$this->assertEquals(3, sizeof($topics));
+		$this->videos_manager->delete_videos_from_videos_disabled_forums();
+		$topics = $this->videos_manager->get_videos_for_topic_ids($topic_ids);
+		$this->assertEquals(2, sizeof($topics));
+	}
+
 	public function test_get_video_for_topic_id()
 	{
 		$topic_id = 1;
@@ -84,6 +94,17 @@ class videos_manager_test extends \robertheim\videos\tests\test_base
 		$topic_ids = null;
 		$videos = $this->videos_manager->get_videos_for_topic_ids($topic_ids);
 		$this->assertEquals(0, sizeof($video));
+	}
+
+	public function test_is_videos_enabled_in_forum()
+	{
+		$forum_id = 1;
+		$enabled = $this->videos_manager->is_videos_enabled_in_forum($forum_id);
+		$this->assertTrue($enabled);
+
+		$forum_id = 2;
+		$enabled = $this->videos_manager->is_videos_enabled_in_forum($forum_id);
+		$this->assertFalse($enabled);
 	}
 
 	public function test_set_video_url_of_topic()

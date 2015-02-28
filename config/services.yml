@@ -11,6 +11,14 @@ services:
             - @auth
         tags:
             - { name: event.listener }
+    robertheim.videos.acp_listener:
+        class: robertheim\videos\event\acp_listener
+        arguments:
+            - @request
+            - @user
+            - @robertheim.videos.videos_manager
+        tags:
+            - { name: event.listener }
     robertheim.videos.videos_manager:
         class: robertheim\videos\service\videos_manager
         arguments:

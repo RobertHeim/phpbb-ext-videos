@@ -194,4 +194,77 @@ class videos_manager
 			WHERE id = ' . $video_id;
 		$this->db->sql_query($sql);
 	}
+
+
+	/**
+	 * Deletes all videos where the topic resides in a forum with tagging disabled.
+	 *
+	 * @param $forum_ids array of forum-ids that should be checked (if null, all are checked).
+	 * @return integer count of deleted videos
+	 */
+	public function delete_videos_from_videos_disabled_forums($forum_ids = null)
+	{
+		$forums_sql_where = '';
+
+		if (is_array($forum_ids))
+		{
+			if (empty($forum_ids))
+			{
+				// performance improvement because we already know the result of querying the db.
+				return 0;
+			}
+			$forums_sql_where = ' AND ' . $this->db->sql_in_set('f.forum_id', $forum_ids);
+		}
+
+		// get ids of all videos that reside in a forum with tagging disabled.
+		$sql = 'SELECT tt.id
+			FROM ' . $this->table_prefix . tables::VIDEOS . ' v
+			WHERE EXISTS (
+				SELECT 1
+				FROM ' . TOPICS_TABLE . ' topics,
+					' . FORUMS_TABLE . " f
+						WHERE topics.topic_id = v.topic_id
+						AND f.forum_id = topics.forum_id
+						AND f.rh_videos_enabled = 0
+						$forums_sql_where
+						)";
+		$result = $this->db->sql_query($sql);
+		$delete_ids = array();
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$delete_ids[] = $row['id'];
+		}
+		$this->db->sql_freeresult($result);
+
+		if (empty($delete_ids))
+		{
+			// nothing to do
+			return 0;
+		}
+		// delete these assignments
+		$sql = 'DELETE FROM ' . $this->table_prefix . tables::VIDEOS . '
+			WHERE ' . $this->db->sql_in_set('id', $delete_ids);
+		$this->db->sql_query($sql);
+		$removed_count = $this->db->sql_affectedrows();
+
+		return $removed_count;
+	}
+
+	/**
+	 * Checks if videos are enabled in the given forum.
+	 *
+	 * @param $forum_id the id of the forum
+	 * @return true if videos are enabled in the given forum, false if not
+	 */
+	public function is_videos_enabled_in_forum($forum_id)
+	{
+		$field = 'rh_videos_enabled';
+		$sql = "SELECT $field
+		FROM " . FORUMS_TABLE . '
+			WHERE ' . $this->db->sql_build_array('SELECT', array('forum_id' => (int) $forum_id));
+		$result = $this->db->sql_query($sql);
+		$enabled = ((int) $this->db->sql_fetchfield($field)) > 0;
+		$this->db->sql_freeresult($result);
+		return $enabled;
+	}
 }

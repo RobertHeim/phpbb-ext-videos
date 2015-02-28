@@ -33,6 +33,11 @@ class release_0_0_1 extends \phpbb\db\migration\migration
 	public function update_schema()
 	{
 		return array(
+			'add_columns'	=> array(
+				FORUMS_TABLE	=> array(
+					'rh_videos_enabled'	=> array('BOOL', 0),
+				),
+			),
 			'add_tables' => array(
 				$this->table_prefix . tables::VIDEOS	=> array(
 					'COLUMNS'		=> array(
@@ -57,7 +62,12 @@ class release_0_0_1 extends \phpbb\db\migration\migration
 	public function revert_schema()
 	{
 		return array(
-			'drop_tables'    => array(
+			'drop_columns'	=> array(
+				FORUMS_TABLE	=> array(
+					'rh_videos_enabled',
+				),
+			),
+			'drop_tables'	=> array(
 				$this->table_prefix . tables::VIDEOS,
 			),
 		);

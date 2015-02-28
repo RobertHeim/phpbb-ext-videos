@@ -143,13 +143,6 @@ class main_listener implements EventSubscriberInterface
 		}
 	}
 
-	private function is_videos_enabled_in_forum($forum_id)
-	{
-		// TODO configure via ACP
-		$video_forum_ids = array(1,2);
-		return in_array($forum_id, $video_forum_ids);
-	}
-
 	/**
 	 * helper
 	 * @return boolean
@@ -203,6 +196,11 @@ class main_listener implements EventSubscriberInterface
 	 */
 	public function posting_modify_template_vars($event)
 	{
+		if (!$this->auth->acl_get(permissions::POST_VIDEO))
+		{
+			return;
+		}
+
 		$data = $event->get_data();
 
 		$is_edit_first_post = $this->is_edit_first_post($data);
@@ -211,12 +209,8 @@ class main_listener implements EventSubscriberInterface
 		{
 			return;
 		}
-		if (!$this->auth->acl_get(permissions::POST_VIDEO))
-		{
-			return;
-		}
 		$forum_id = $data['forum_id'];
-		if (! $this->is_videos_enabled_in_forum($forum_id))
+		if (!$this->videos_manager->is_videos_enabled_in_forum($forum_id))
 		{
 			return;
 		}
@@ -255,7 +249,7 @@ class main_listener implements EventSubscriberInterface
 	{
 		$data = $event->get_data();
 		$forum_id = (int) $data['forum_id'];
-		if (!$this->is_videos_enabled_in_forum($forum_id))
+		if (!$this->videos_manager->is_videos_enabled_in_forum($forum_id))
 		{
 			return;
 		}
