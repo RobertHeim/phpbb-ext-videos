@@ -65,7 +65,7 @@ class videos_manager_test extends \robertheim\videos\tests\test_base
 		$videos = $this->videos_manager->get_videos_for_topic_ids($topic_ids);
 		$this->assertEquals(2, sizeof($videos));
 		$diff = array_diff($topic_ids, array($videos[0]['topic_id'], $videos[1]['topic_id']));
-		$this->assertEquals(0, $diff);
+		$this->assertEquals(0, sizeof($diff));
 		$this->assertFalse($videos[0]['topic_id'] == $videos[1]['topic_id']);
 		$this->assertEquals('title' . ($videos[0]['topic_id'] == 1 ? '' : '2'), $videos[0]['video']->get_title());
 		$this->assertEquals('title' . ($videos[1]['topic_id'] == 1 ? '' : '2'), $videos[1]['video']->get_title());
@@ -89,6 +89,7 @@ class videos_manager_test extends \robertheim\videos\tests\test_base
 		$topic_id = 1;
 		$video_url = 'https://www.youtube.com/watch?v=9bZkp7q19f0';
 		$video = rh_video::fromUrl($video_url);
+		$this->assertNotNull($video);
 		$this->videos_manager->store_video($video, $topic_id);
 		$video2 = $this->videos_manager->get_video_for_topic_id($topic_id);
 		$this->assertNotNull($video);
