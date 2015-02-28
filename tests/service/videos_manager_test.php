@@ -88,6 +88,15 @@ class videos_manager_test extends \robertheim\videos\tests\test_base
 	{
 		$topic_id = 1;
 		$video_url = 'https://www.youtube.com/watch?v=9bZkp7q19f0';
+
+		$default_opts = array(
+			"ssl" => array(
+				"verify_peer" => false,
+				"verify_peer_name" => false,
+			)
+		);
+		stream_context_set_default($default_opts);
+
 		$video = rh_video::fromUrl($video_url);
 		$this->assertNotNull($video);
 		$this->videos_manager->store_video($video, $topic_id);
