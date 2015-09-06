@@ -58,8 +58,7 @@ class acp_listener implements EventSubscriberInterface
 		$data = $event->get_data();
 
 		$data['template_data']['S_RH_VIDEOS_ENABLED'] = $data['forum_data']['rh_videos_enabled'];
-		$post = $this->request->get_super_global(\phpbb\request\request::POST);
-		$prune = isset($post['rh_videos_prune']) ? $post['rh_videos_prune'] : 0;
+		$prune = $this->request->variable('rh_videos_prune', 0);
 		$data['template_data']['S_RH_VIDEOS_PRUNE'] = $prune;
 
 		$event->set_data($data);
@@ -69,15 +68,13 @@ class acp_listener implements EventSubscriberInterface
 	{
 		$data = $event->get_data();
 
-		$post = $this->request->get_super_global(\phpbb\request\request::POST);
-
-		$status = isset($post['rh_videos_enabled']) ? $post['rh_videos_enabled'] : 0;
+		$status = $this->request->variable('rh_videos_enabled', 0);
 		// ensure 0 or 1
 		$status = ($status ? 1 : 0);
 		$data['forum_data']['rh_videos_enabled'] = $status;
 
 		// pruning requires the videos to be disabled for this forum to prevent accidental deletion
-		$prune = isset($post['rh_videos_prune']) ? $post['rh_videos_prune'] : 0;
+		$prune = $this->request->variable('rh_videos_prune', 0);
 		if ($prune && $status)
 		{
 			$this->user->add_lang_ext('robertheim/videos', 'videos_acp');
@@ -89,10 +86,9 @@ class acp_listener implements EventSubscriberInterface
 
 	public function acp_manage_forums_update_data_after($event)
 	{
-		$post = $this->request->get_super_global(\phpbb\request\request::POST);
 
-		$status = isset($post['rh_videos_enabled']) ? $post['rh_videos_enabled'] : 0;
-		$prune = isset($post['rh_videos_prune']) ? $post['rh_videos_prune'] : 0;
+		$status = $this->request->variable('rh_videos_enabled', 0);
+		$prune = $this->request->variable('rh_videos_prune', 0);
 		if (!$status && $prune)
 		{
 			$data = $event->get_data();
