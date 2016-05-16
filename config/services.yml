@@ -2,27 +2,27 @@ services:
     robertheim.videos.listener:
         class: robertheim\videos\event\main_listener
         arguments:
-            - @config
-            - @robertheim.videos.videos_manager
-            - @controller.helper
-            - @request
-            - @user
-            - @template
-            - @auth
+            - '@config'
+            - '@robertheim.videos.videos_manager'
+            - '@controller.helper'
+            - '@request'
+            - '@user'
+            - '@template'
+            - '@auth'
         tags:
             - { name: event.listener }
     robertheim.videos.acp_listener:
         class: robertheim\videos\event\acp_listener
         arguments:
-            - @request
-            - @user
-            - @robertheim.videos.videos_manager
+            - '@request'
+            - '@user'
+            - '@robertheim.videos.videos_manager'
         tags:
             - { name: event.listener }
     robertheim.videos.videos_manager:
         class: robertheim\videos\service\videos_manager
         arguments:
-            - @dbal.conn.driver
-            - @config
-            - @auth
-            - %core.table_prefix%
+            - '@dbal.conn.driver'
+            - '@config'
+            - '@auth'
+            - '%core.table_prefix%'
