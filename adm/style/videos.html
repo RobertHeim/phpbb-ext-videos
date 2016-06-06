@@ -17,7 +17,7 @@
 		<legend>{L_VIDEOS_MAINTENANCE}</legend>
 		<dl>
 			<dt><label for="robertheim_videos_prune_forums">{L_VIDEOS_PRUNE_FORUMS}:</label><br /><span>{L_VIDEOS_PRUNE_FORUMS_EXP}</span></dt>
-			<dd><input type="radio" class="radio" name="robertheim_videos_prune_forums" value="1" onclick="alert('{L_VIDEOS_PRUNE_FORUMS_CONFIRM}');" /> {L_YES} &nbsp; 
+			<dd><input type="radio" class="radio" name="robertheim_videos_prune_forums" value="1" onclick="return confirm('{L_VIDEOS_PRUNE_FORUMS_CONFIRM}');" /> {L_YES} &nbsp; 
 				<input type="radio" class="radio" name="robertheim_videos_prune_forums" value="0" checked="checked" /> {L_NO}</dd>
 		</dl>
 	</fieldset>
