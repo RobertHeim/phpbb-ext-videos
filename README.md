@@ -29,6 +29,8 @@ Clone (or download an move) the repository into the folder phpBB3/ext/robertheim
 ```
 cd phpBB3
 git clone https://github.com/RobertHeim/phpbb-ext-videos.git ext/robertheim/videos/
+cd ext/robertheim/videos/
+composer install
 ```
 
 ### 2. activate
